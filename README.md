@@ -75,12 +75,90 @@ Este comando:
 npm run dev
 ```
 
-### Modo producción:
+### Modo producción (directo):
 ```bash
 npm start
 ```
 
 El servidor estará disponible en `http://localhost:3000`
+
+### Producción con PM2 (Recomendado)
+
+PM2 es un gestor de procesos para Node.js que permite mantener la aplicación corriendo en producción con reinicio automático, logs y monitoreo.
+
+#### Instalación de PM2:
+```bash
+npm install -g pm2
+```
+
+#### Configuración inicial:
+
+1. **Usar el archivo de configuración PM2** (recomendado):
+```bash
+pm2 start ecosystem.config.js
+```
+
+2. **O iniciar manualmente**:
+```bash
+pm2 start src/server.js --name arsys-portal-api
+```
+
+#### Comandos útiles de PM2:
+
+```bash
+# Ver estado de los procesos
+pm2 status
+
+# Ver logs en tiempo real
+pm2 logs arsys-portal-api
+
+# Ver logs de los últimos 100 líneas
+pm2 logs arsys-portal-api --lines 100
+
+# Reiniciar la aplicación
+pm2 restart arsys-portal-api
+
+# Detener la aplicación
+pm2 stop arsys-portal-api
+
+# Eliminar la aplicación de PM2
+pm2 delete arsys-portal-api
+
+# Monitoreo en tiempo real
+pm2 monit
+
+# Guardar la configuración actual para que PM2 la restaure al reiniciar
+pm2 save
+
+# Configurar PM2 para iniciar al arrancar el sistema (Linux)
+pm2 startup
+pm2 save
+```
+
+#### Configuración con archivo ecosystem.config.js:
+
+El proyecto incluye un archivo `ecosystem.config.js` con la configuración recomendada para producción. Este archivo permite:
+
+- Configurar variables de entorno
+- Definir el número de instancias (cluster mode)
+- Configurar logs
+- Configurar reinicios automáticos
+- Y más opciones avanzadas
+
+Para usar el archivo de configuración:
+```bash
+pm2 start ecosystem.config.js
+```
+
+#### Variables de entorno en PM2:
+
+Si prefieres usar variables de entorno desde un archivo `.env` con PM2, puedes instalar `pm2-dotenv`:
+```bash
+npm install -g pm2-dotenv
+pm2 start ecosystem.config.js --env production
+```
+
+O definir las variables directamente en `ecosystem.config.js` en la sección `env`.
 
 ## 📚 Endpoints de la API
 
@@ -209,6 +287,29 @@ Niveles de log:
 - `npm run dev` - Inicia el servidor en modo desarrollo con nodemon
 - `npm run initdb` - Inicializa la base de datos (crea tablas, relaciones y datos de ejemplo)
 
+### Scripts PM2 (opcional)
+
+Puedes agregar estos scripts a tu `package.json` para facilitar el uso de PM2:
+
+```json
+{
+  "scripts": {
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop arsys-portal-api",
+    "pm2:restart": "pm2 restart arsys-portal-api",
+    "pm2:logs": "pm2 logs arsys-portal-api",
+    "pm2:monit": "pm2 monit"
+  }
+}
+```
+
+Luego puedes usar:
+- `npm run pm2:start` - Iniciar con PM2
+- `npm run pm2:stop` - Detener
+- `npm run pm2:restart` - Reiniciar
+- `npm run pm2:logs` - Ver logs
+- `npm run pm2:monit` - Monitoreo
+
 ## 🏗️ Estructura del Proyecto
 
 ```
@@ -246,6 +347,7 @@ arsysintela-clients/
 │   └── scripts/
 │       └── initdb.js          # Script de inicialización
 ├── .env.example               # Ejemplo de variables de entorno
+├── ecosystem.config.js         # Configuración PM2
 ├── package.json
 └── README.md
 ```
