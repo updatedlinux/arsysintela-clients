@@ -1,38 +1,42 @@
-const { sequelize, initDB } = require('../config/db');
-const { User, Client, Product } = require('../models');
+const { sequelize } = require('../config/db');
+const { User, Client, Product, ClientProduct } = require('../models');
 const bcrypt = require('bcrypt');
 const logger = require('../logger/logger');
 
 const seedDatabase = async () => {
   try {
+    logger.info('Iniciando inicialización de la base de datos...');
+
     // Conectar a la base de datos
     await sequelize.authenticate();
-    logger.info('Conexión a la base de datos establecida correctamente.');
+    logger.info('✓ Conexión a la base de datos establecida correctamente.');
 
-    // Sincronizar modelos (crear tablas si no existen)
-    await sequelize.sync({ alter: false });
-    logger.info('Modelos sincronizados con la base de datos.');
+    // Sincronizar modelos (crear tablas si no existen, sin alterar las existentes)
+    // force: false - no borra tablas existentes
+    // alter: false - no modifica estructura de tablas existentes
+    await sequelize.sync({ force: false, alter: false });
+    logger.info('✓ Modelos sincronizados con la base de datos.');
 
     logger.info('Inicializando datos de ejemplo...');
 
-    // Verificar si ya existe un usuario admin
-    const existingAdmin = await User.findOne({ where: { email: 'admin@arsysintela.com' } });
+    // Verificar y crear usuario admin
+    const adminEmail = 'admin@arsysintela.com';
+    const existingAdmin = await User.findOne({ where: { email: adminEmail } });
 
     if (!existingAdmin) {
-      // Crear usuario admin por defecto
       const passwordHash = await bcrypt.hash('admin123', 10);
       await User.create({
-        email: 'admin@arsysintela.com',
-        password_hash: passwordHash,
+        email: adminEmail,
+        passwordHash: passwordHash,
         name: 'Administrador',
         role: 'admin',
       });
-      logger.info('Usuario admin creado: admin@arsysintela.com / admin123');
+      logger.info(`✓ Usuario admin creado: ${adminEmail} / admin123`);
     } else {
-      logger.info('El usuario admin ya existe');
+      logger.info(`✓ Usuario admin ya existe: ${adminEmail}`);
     }
 
-    // Crear algunos productos de ejemplo si no existen
+    // Crear productos de ejemplo
     const products = [
       {
         code: 'ASSISTANT360',
@@ -60,21 +64,67 @@ const seedDatabase = async () => {
       },
     ];
 
+    let productsCreated = 0;
+    let productsSkipped = 0;
+
     for (const productData of products) {
       const existingProduct = await Product.findOne({ where: { code: productData.code } });
       if (!existingProduct) {
         await Product.create(productData);
-        logger.info(`Producto creado: ${productData.code}`);
+        productsCreated++;
+        logger.info(`✓ Producto creado: ${productData.code} - ${productData.name}`);
+      } else {
+        productsSkipped++;
+        logger.info(`- Producto ya existe: ${productData.code}`);
       }
     }
 
-    logger.info('Base de datos inicializada correctamente');
+    logger.info(`✓ Productos procesados: ${productsCreated} creados, ${productsSkipped} ya existían`);
+
+    // Verificar estructura de tablas
+    const tables = ['users', 'clients', 'products', 'client_products'];
+    for (const tableName of tables) {
+      try {
+        const [results] = await sequelize.query(`SHOW TABLES LIKE '${tableName}'`);
+        if (results.length > 0) {
+          logger.info(`✓ Tabla '${tableName}' existe`);
+        } else {
+          logger.warn(`⚠ Tabla '${tableName}' no encontrada`);
+        }
+      } catch (err) {
+        logger.warn(`⚠ Error al verificar tabla '${tableName}': ${err.message}`);
+      }
+    }
+
+    logger.info('');
+    logger.info('═══════════════════════════════════════════════════════════');
+    logger.info('✓ Base de datos inicializada correctamente');
+    logger.info('═══════════════════════════════════════════════════════════');
+    logger.info('');
+    logger.info('Credenciales de acceso:');
+    logger.info('  Email: admin@arsysintela.com');
+    logger.info('  Contraseña: admin123');
+    logger.info('');
+
     process.exit(0);
   } catch (error) {
-    logger.error('Error al inicializar la base de datos:', error);
+    logger.error('');
+    logger.error('═══════════════════════════════════════════════════════════');
+    logger.error('✗ Error al inicializar la base de datos');
+    logger.error('═══════════════════════════════════════════════════════════');
+    logger.error('Detalles:', error.message);
+    if (error.stack) {
+      logger.error('Stack:', error.stack);
+    }
+    logger.error('');
     process.exit(1);
   }
 };
 
-seedDatabase();
+// Ejecutar solo si es llamado directamente
+if (require.main === module) {
+  seedDatabase();
+}
+
+module.exports = { seedDatabase };
 

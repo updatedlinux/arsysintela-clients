@@ -11,6 +11,10 @@ const sequelize = new Sequelize(
     port: config.db.port,
     dialect: 'mariadb',
     logging: (msg) => logger.debug(msg),
+    define: {
+      underscored: true,
+      timestamps: true,
+    },
     pool: {
       max: 5,
       min: 0,

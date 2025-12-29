@@ -9,7 +9,7 @@ const ClientProduct = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    client_id: {
+    clientId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -17,7 +17,7 @@ const ClientProduct = sequelize.define(
         key: 'id',
       },
     },
-    product_id: {
+    productId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -30,11 +30,11 @@ const ClientProduct = sequelize.define(
       defaultValue: 'activo',
       allowNull: false,
     },
-    start_date: {
+    startDate: {
       type: DataTypes.DATEONLY,
       allowNull: true,
     },
-    end_date: {
+    endDate: {
       type: DataTypes.DATEONLY,
       allowNull: true,
     },
@@ -46,7 +46,6 @@ const ClientProduct = sequelize.define(
   {
     tableName: 'client_products',
     timestamps: true,
-    underscored: false,
   }
 );
 

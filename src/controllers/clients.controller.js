@@ -10,7 +10,7 @@ const getAllClients = async (req, res, next) => {
     const { count, rows } = await Client.findAndCountAll({
       limit,
       offset,
-      order: [['created_at', 'DESC']],
+      order: [['createdAt', 'DESC']],
     });
 
     res.json({
@@ -38,7 +38,7 @@ const getClientById = async (req, res, next) => {
           model: Product,
           as: 'products',
           through: {
-            attributes: ['id', 'status', 'start_date', 'end_date', 'notes'],
+            attributes: ['id', 'status', 'startDate', 'endDate', 'notes'],
           },
         },
       ],

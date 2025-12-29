@@ -23,7 +23,7 @@ const login = async (req, res, next) => {
       });
     }
 
-    const isValidPassword = await bcrypt.compare(password, user.password_hash);
+    const isValidPassword = await bcrypt.compare(password, user.passwordHash);
 
     if (!isValidPassword) {
       logger.warn(`Intento de login con contraseña incorrecta para: ${email}`);

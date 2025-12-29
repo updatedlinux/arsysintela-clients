@@ -17,7 +17,7 @@ const getAllProducts = async (req, res, next) => {
       where,
       limit,
       offset,
-      order: [['created_at', 'DESC']],
+      order: [['createdAt', 'DESC']],
     });
 
     res.json({

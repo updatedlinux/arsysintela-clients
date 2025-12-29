@@ -6,25 +6,25 @@ const ClientProduct = require('./ClientProduct');
 // Asociaciones
 Client.belongsToMany(Product, {
   through: ClientProduct,
-  foreignKey: 'client_id',
-  otherKey: 'product_id',
+  foreignKey: 'clientId',
+  otherKey: 'productId',
   as: 'products',
 });
 
 Product.belongsToMany(Client, {
   through: ClientProduct,
-  foreignKey: 'product_id',
-  otherKey: 'client_id',
+  foreignKey: 'productId',
+  otherKey: 'clientId',
   as: 'clients',
 });
 
 ClientProduct.belongsTo(Client, {
-  foreignKey: 'client_id',
+  foreignKey: 'clientId',
   as: 'client',
 });
 
 ClientProduct.belongsTo(Product, {
-  foreignKey: 'product_id',
+  foreignKey: 'productId',
   as: 'product',
 });
 

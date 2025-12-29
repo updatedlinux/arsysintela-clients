@@ -17,7 +17,7 @@ const User = sequelize.define(
         isEmail: true,
       },
     },
-    password_hash: {
+    passwordHash: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -34,7 +34,6 @@ const User = sequelize.define(
   {
     tableName: 'users',
     timestamps: true,
-    underscored: false,
   }
 );
 

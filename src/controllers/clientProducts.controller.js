@@ -14,14 +14,14 @@ const getClientProducts = async (req, res, next) => {
     }
 
     const clientProducts = await ClientProduct.findAll({
-      where: { client_id: id },
+      where: { clientId: id },
       include: [
         {
           model: Product,
           as: 'product',
         },
       ],
-      order: [['created_at', 'DESC']],
+      order: [['createdAt', 'DESC']],
     });
 
     res.json(clientProducts);
@@ -59,8 +59,8 @@ const addClientProduct = async (req, res, next) => {
     // Verificar si ya existe la relación
     const existing = await ClientProduct.findOne({
       where: {
-        client_id: id,
-        product_id: product_id,
+        clientId: id,
+        productId: product_id,
       },
     });
 
@@ -71,11 +71,11 @@ const addClientProduct = async (req, res, next) => {
     }
 
     const clientProduct = await ClientProduct.create({
-      client_id: id,
-      product_id,
+      clientId: id,
+      productId: product_id,
       status: status || 'activo',
-      start_date,
-      end_date,
+      startDate: start_date,
+      endDate: end_date,
       notes,
     });
 
@@ -112,8 +112,8 @@ const updateClientProduct = async (req, res, next) => {
 
     await clientProduct.update({
       status: status !== undefined ? status : clientProduct.status,
-      start_date: start_date !== undefined ? start_date : clientProduct.start_date,
-      end_date: end_date !== undefined ? end_date : clientProduct.end_date,
+      startDate: start_date !== undefined ? start_date : clientProduct.startDate,
+      endDate: end_date !== undefined ? end_date : clientProduct.endDate,
       notes: notes !== undefined ? notes : clientProduct.notes,
     });
 
