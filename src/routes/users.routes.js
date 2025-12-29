@@ -210,7 +210,7 @@ router.get('/', adminMiddleware, getAllUsers);
  *               properties:
  *                 message:
  *                   type: string
- *                   example: Conflicto: el recurso ya existe
+ *                   example: "Conflicto: el recurso ya existe"
  *                 details:
  *                   type: array
  *                   items:
