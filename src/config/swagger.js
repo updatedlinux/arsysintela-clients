@@ -61,10 +61,22 @@ const options = {
   },
   apis: [
     path.join(__dirname, '../routes/*.js'),
+    path.join(__dirname, '../routes/users.routes.js'),
   ],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
+
+// Debug: Verificar qué paths se detectaron
+if (process.env.NODE_ENV === 'development') {
+  const paths = Object.keys(swaggerSpec.paths || {});
+  console.log(`[Swagger] Paths detectados: ${paths.length}`);
+  if (paths.length > 0) {
+    console.log(`[Swagger] Primeros paths: ${paths.slice(0, 5).join(', ')}`);
+  }
+  const hasUsers = paths.some(p => p.includes('/users'));
+  console.log(`[Swagger] ¿Incluye /users?: ${hasUsers}`);
+}
 
 module.exports = swaggerSpec;
 
