@@ -12,9 +12,11 @@ const authRouter = require('./routes/auth.routes');
 const clientsRouter = require('./routes/clients.routes');
 const productsRouter = require('./routes/products.routes');
 const clientProductsRouter = require('./routes/clientProducts.routes');
+const usersRouter = require('./routes/users.routes');
 
-// Importar middleware de autenticación
+// Importar middlewares
 const authMiddleware = require('./middlewares/auth.middleware');
+const adminMiddleware = require('./middlewares/admin.middleware');
 
 const app = express();
 
@@ -57,6 +59,9 @@ app.use('/api/auth', authRouter);
 app.use('/api/clients', authMiddleware, clientsRouter);
 app.use('/api/products', authMiddleware, productsRouter);
 app.use('/api', authMiddleware, clientProductsRouter);
+
+// Rutas de usuarios (requieren autenticación y rol admin, excepto cambio de contraseña)
+app.use('/api/users', authMiddleware, usersRouter);
 
 // Ruta raíz
 app.get('/', (req, res) => {
