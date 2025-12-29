@@ -1,4 +1,5 @@
 const { sequelize } = require('../config/db');
+const { Sequelize } = require('sequelize');
 const { User, Client, Product, ClientProduct } = require('../models');
 const bcrypt = require('bcrypt');
 const logger = require('../logger/logger');
@@ -83,10 +84,17 @@ const seedDatabase = async () => {
 
     // Verificar estructura de tablas
     const tables = ['users', 'clients', 'products', 'client_products'];
+    const dbName = sequelize.config.database;
     for (const tableName of tables) {
       try {
-        const [results] = await sequelize.query(`SHOW TABLES LIKE '${tableName}'`);
-        if (results.length > 0) {
+        const results = await sequelize.query(
+          `SELECT COUNT(*) as count FROM information_schema.tables WHERE table_schema = ? AND table_name = ?`,
+          {
+            replacements: [dbName, tableName],
+            type: Sequelize.QueryTypes.SELECT,
+          }
+        );
+        if (results && results.length > 0 && results[0].count > 0) {
           logger.info(`✓ Tabla '${tableName}' existe`);
         } else {
           logger.warn(`⚠ Tabla '${tableName}' no encontrada`);
