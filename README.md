@@ -68,6 +68,17 @@ Este comando:
   - Contraseña: `admin123`
 - Crea productos de ejemplo (ASSISTANT360, CONDOMINIO360, INTELA_GRID, INTELA_SMART)
 
+6. **Asociar usuarios con clientes** (recomendado después de crear usuarios):
+```bash
+npm run migrate:user-client
+```
+
+Este comando:
+- Agrega la columna `user_id` a la tabla `clients` si no existe
+- Asocia clientes existentes con usuarios por email (coincidencia exacta, case-insensitive)
+- Crea clientes automáticamente para usuarios que no tienen cliente asociado
+- **Nota importante**: La relación Usuario-Cliente se basa en el email. Un usuario = un cliente.
+
 ## 🏃 Ejecución
 
 ### Modo desarrollo (con nodemon):
@@ -170,9 +181,10 @@ O definir las variables directamente en `ecosystem.config.js` en la sección `en
 
 ### Clientes (requiere autenticación)
 - `GET /api/clients` - Listar clientes (con paginación)
+- `GET /api/clients/me` - Obtener mi cliente asociado (cliente del usuario autenticado)
 - `GET /api/clients/:id` - Obtener cliente por ID
-- `POST /api/clients` - Crear nuevo cliente
-- `PUT /api/clients/:id` - Actualizar cliente
+- `POST /api/clients` - Crear nuevo cliente (se asocia automáticamente con usuario si el email coincide)
+- `PUT /api/clients/:id` - Actualizar cliente (se asocia automáticamente con usuario si el email coincide)
 - `DELETE /api/clients/:id` - Eliminar cliente
 
 ### Productos (requiere autenticación)
@@ -225,6 +237,8 @@ Authorization: Bearer <tu_token_jwt>
 - `role` (enum: 'admin', 'user', default: 'user')
 - `created_at`, `updated_at`
 
+**Relación**: Un usuario puede tener un cliente asociado (uno a uno) a través del campo `userId` en la tabla `clients`.
+
 ### Client
 - `id` (PK, autoincrement)
 - `name` (no nulo)
@@ -232,7 +246,10 @@ Authorization: Bearer <tu_token_jwt>
 - `phone` (opcional)
 - `company` (opcional)
 - `notes` (opcional, TEXT)
+- `user_id` (FK → User.id, opcional) - **Nuevo**: Asociación con usuario por email
 - `created_at`, `updated_at`
+
+**Relación**: Un cliente puede estar asociado a un usuario (muchos a uno). La asociación se realiza automáticamente por email cuando se crea un usuario o se actualiza un cliente.
 
 ### Product
 - `id` (PK, autoincrement)
@@ -286,6 +303,7 @@ Niveles de log:
 - `npm start` - Inicia el servidor en modo producción
 - `npm run dev` - Inicia el servidor en modo desarrollo con nodemon
 - `npm run initdb` - Inicializa la base de datos (crea tablas, relaciones y datos de ejemplo)
+- `npm run migrate:user-client` - Migra y asocia usuarios con clientes por email
 
 ### Scripts PM2 (opcional)
 

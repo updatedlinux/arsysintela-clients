@@ -3,7 +3,18 @@ const Client = require('./Client');
 const Product = require('./Product');
 const ClientProduct = require('./ClientProduct');
 
-// Asociaciones
+// Asociación User-Client (uno a uno por email)
+User.hasOne(Client, {
+  foreignKey: 'userId',
+  as: 'client',
+});
+
+Client.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user',
+});
+
+// Asociaciones Client-Product (muchos a muchos)
 Client.belongsToMany(Product, {
   through: ClientProduct,
   foreignKey: 'clientId',

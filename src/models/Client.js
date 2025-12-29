@@ -32,6 +32,15 @@ const Client = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
+      comment: 'ID del usuario asociado (relación por email)',
+    },
   },
   {
     tableName: 'clients',

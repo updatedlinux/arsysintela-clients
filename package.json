@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "initdb": "node src/scripts/initdb.js"
+    "initdb": "node src/scripts/initdb.js",
+    "migrate:user-client": "node src/scripts/migrate-user-client.js"
   },
   "keywords": [
     "arsys",

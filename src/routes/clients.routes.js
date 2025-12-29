@@ -6,6 +6,7 @@ const {
   createClient,
   updateClient,
   deleteClient,
+  getMyClient,
 } = require('../controllers/clients.controller');
 
 /**
@@ -36,6 +37,25 @@ const {
  *         description: No autorizado
  */
 router.get('/', getAllClients);
+
+/**
+ * @swagger
+ * /clients/me:
+ *   get:
+ *     summary: Obtener mi cliente asociado
+ *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
+ *     description: Obtiene el cliente asociado al usuario autenticado (relación por email)
+ *     responses:
+ *       200:
+ *         description: Cliente encontrado
+ *       404:
+ *         description: No se encontró un cliente asociado a tu cuenta
+ *       401:
+ *         description: No autorizado
+ */
+router.get('/me', getMyClient);
 
 /**
  * @swagger

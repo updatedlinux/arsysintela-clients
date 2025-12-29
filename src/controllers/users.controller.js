@@ -1,11 +1,19 @@
 const bcrypt = require('bcrypt');
-const { User } = require('../models');
+const { User, Client } = require('../models');
 const logger = require('../logger/logger');
 
 const getAllUsers = async (req, res, next) => {
   try {
     const users = await User.findAll({
       attributes: ['id', 'email', 'name', 'role', 'createdAt', 'updatedAt'],
+      include: [
+        {
+          model: Client,
+          as: 'client',
+          attributes: ['id', 'name', 'email', 'phone', 'company'],
+          required: false,
+        },
+      ],
       order: [['createdAt', 'DESC']],
     });
 
@@ -65,14 +73,23 @@ const createUser = async (req, res, next) => {
       role: role || 'user',
     });
 
-    logger.info(`Usuario creado: ${user.id} - ${user.email} por admin: ${req.user.email}`);
+    // Crear cliente asociado automáticamente
+    const client = await Client.create({
+      name: name || email.split('@')[0],
+      email: email,
+      userId: user.id,
+    });
 
-    // Retornar usuario sin passwordHash
+    logger.info(`Usuario creado: ${user.id} - ${user.email} por admin: ${req.user.email}`);
+    logger.info(`Cliente asociado creado: ${client.id} - ${client.name} para usuario ${user.id}`);
+
+    // Retornar usuario sin passwordHash, incluyendo información del cliente
     res.status(201).json({
       id: user.id,
       email: user.email,
       name: user.name,
       role: user.role,
+      clientId: client.id,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     });
