@@ -20,15 +20,34 @@ const adminMiddleware = require('./middlewares/admin.middleware');
 
 const app = express();
 
-// Configurar CORS
+// Trust proxy (necesario cuando está detrás de Nginx Proxy Manager)
+app.set('trust proxy', 1);
+
+// Configurar CORS ANTES de cualquier otra ruta o middleware
 const corsOptions = {
-  origin: [
-    'https://clientes.arsystech.net',
-    'https://www.arsysintela.com',
-    'http://localhost:5000', // Flask en desarrollo
-    'http://localhost:3000',
-  ],
+  origin: function (origin, callback) {
+    // Lista de orígenes permitidos
+    const allowedOrigins = [
+      'https://clientes.arsystech.net',
+      'https://www.arsysintela.com',
+      'http://localhost:5000', // Flask en desarrollo
+      'http://localhost:3000',
+      'http://10.200.1.230:3000', // IP interna
+      'http://10.200.1.230', // IP interna sin puerto
+    ];
+
+    // Permitir requests sin origin (ej: Postman, curl, Swagger UI desde mismo dominio)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      logger.warn(`CORS bloqueado para origen: ${origin}`);
+      callback(new Error('No permitido por CORS'));
+    }
+  },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200,
 };
 
@@ -45,11 +64,32 @@ const stream = {
 
 app.use(morgan('combined', { stream }));
 
-// Swagger UI
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+// Swagger UI con opciones para evitar caché
+app.use('/api/docs', (req, res, next) => {
+  // Headers para evitar caché
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+}, swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'Arsys Intela - Portal de Clientes API',
+  customSiteTitle: 'Arsys Intela - Portal de Clientes API v1.0.1',
+  swaggerOptions: {
+    persistAuthorization: true,
+    displayRequestDuration: true,
+    filter: true,
+    tryItOutEnabled: true,
+  },
 }));
+
+// Endpoint para servir el spec JSON directamente (útil para debugging)
+app.get('/api/docs/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.json(swaggerSpec);
+});
 
 // Rutas públicas
 app.use('/api/health', healthRouter);

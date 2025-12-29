@@ -6,7 +6,7 @@ const options = {
     openapi: '3.0.0',
     info: {
       title: 'Arsys Intela - Portal de Clientes API',
-      version: '1.0.0',
+      version: '1.0.1',
       description: 'API REST para el Portal de Clientes de Arsys Intela',
       contact: {
         name: 'Arsys Intela',
@@ -17,6 +17,10 @@ const options = {
       {
         url: 'https://clientes.arsystech.net/api',
         description: 'Producción',
+      },
+      {
+        url: 'http://10.200.1.230:3000/api',
+        description: 'IP Interna',
       },
       {
         url: 'http://localhost:3000/api',
