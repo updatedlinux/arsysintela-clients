@@ -52,19 +52,6 @@ const adminMiddleware = require('../middlewares/admin.middleware');
  *                     type: string
  *                     format: date-time
  *                     example: "2025-01-28T23:55:00.000Z"
- *             example:
- *               - id: 1
- *                 email: admin@arsysintela.com
- *                 name: Administrador
- *                 role: admin
- *                 createdAt: "2025-01-10T08:00:00.000Z"
- *                 updatedAt: "2025-01-10T08:00:00.000Z"
- *               - id: 2
- *                 email: usuario@arsysintela.com
- *                 name: Usuario Normal
- *                 role: user
- *                 createdAt: "2025-01-15T10:30:00.000Z"
- *                 updatedAt: "2025-01-15T10:30:00.000Z"
  *       401:
  *         description: No autorizado (token inválido o faltante)
  *         content:

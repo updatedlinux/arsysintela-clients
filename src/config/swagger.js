@@ -32,6 +32,32 @@ const options = {
         },
       },
     },
+    tags: [
+      {
+        name: 'Health',
+        description: 'Endpoints de healthcheck',
+      },
+      {
+        name: 'Auth',
+        description: 'Endpoints de autenticación',
+      },
+      {
+        name: 'Users',
+        description: 'Gestión de usuarios del sistema (requiere autenticación)',
+      },
+      {
+        name: 'Clients',
+        description: 'Gestión de clientes de negocio',
+      },
+      {
+        name: 'Products',
+        description: 'Gestión de productos',
+      },
+      {
+        name: 'ClientProducts',
+        description: 'Relaciones entre clientes y productos',
+      },
+    ],
   },
   apis: [
     path.join(__dirname, '../routes/*.js'),
