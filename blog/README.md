@@ -127,6 +127,63 @@ La documentación interactiva está disponible en:
 - `npm run dev` - Inicia el servidor en modo desarrollo con nodemon
 - `npm run seed` - Crea las tablas e inserta posts de ejemplo
 
+## 🚀 Ejecución con PM2
+
+Para ejecutar el servicio en producción con PM2:
+
+### Instalación de PM2 (si no está instalado)
+
+```bash
+npm install -g pm2
+```
+
+### Iniciar el servicio
+
+```bash
+cd blog
+pm2 start ecosystem.config.js
+```
+
+### Comandos útiles de PM2
+
+```bash
+# Ver estado de los procesos
+pm2 status
+
+# Ver logs en tiempo real
+pm2 logs arsys-blog-api
+
+# Reiniciar el servicio
+pm2 restart arsys-blog-api
+
+# Detener el servicio
+pm2 stop arsys-blog-api
+
+# Eliminar el proceso de PM2
+pm2 delete arsys-blog-api
+
+# Guardar la configuración actual de PM2
+pm2 save
+
+# Configurar PM2 para iniciar al arrancar el sistema
+pm2 startup
+pm2 save
+```
+
+### Configuración
+
+El archivo `ecosystem.config.js` está configurado para:
+- Nombre del proceso: `arsys-blog-api`
+- Puerto: `3001`
+- Modo: `fork` (una instancia)
+- Logs en: `./logs/pm2-*.log`
+- Reinicio automático en caso de fallo
+- Límite de memoria: 500MB (se reinicia si se excede)
+
+### Variables de Entorno
+
+PM2 leerá las variables de entorno desde el archivo `.env` si existe. Asegúrate de tener configurado tu `.env` con todas las variables necesarias antes de iniciar con PM2.
+
 ## 🌐 Configuración Nginx Proxy Manager
 
 El backend está diseñado para funcionar detrás de Nginx Proxy Manager:
@@ -225,6 +282,7 @@ blog/
 │   └── scripts/
 │       └── seed.js            # Script de datos demo
 ├── .env.example               # Ejemplo de variables de entorno
+├── ecosystem.config.js        # Configuración PM2 para producción
 ├── package.json
 └── README.md
 ```

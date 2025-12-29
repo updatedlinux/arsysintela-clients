@@ -65,6 +65,7 @@ const getAllPosts = async (req, res, next) => {
         'tag',
         'publishedAt',
         'headerImageUrl',
+        'isPublished',
       ],
     });
 

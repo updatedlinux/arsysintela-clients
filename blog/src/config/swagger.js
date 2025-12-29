@@ -119,6 +119,10 @@ const options = {
               type: 'string',
               format: 'uri',
             },
+            isPublished: {
+              type: 'boolean',
+              example: true,
+            },
           },
         },
         Pagination: {
